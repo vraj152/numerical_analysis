@@ -32,4 +32,4 @@ class Jacobi:
         return np.dot(self.A, self.sol) - self.b
         
     def __str__(self):
-        return "Iterations: " + str(self.count)
+        return "Jacobi Iterations: " + str(self.count)
