@@ -50,6 +50,9 @@ class GenerateMatrix:
         T_gs = np.matmul(np.linalg.inv(D-L),U)
         ev_gs = max(abs(np.linalg.eigvals(T_gs)))
         
+        self.jacobi_rad = ev_jac
+        self.gs_rad = ev_gs
+        
         return max(ev_jac, ev_gs)
     
         """

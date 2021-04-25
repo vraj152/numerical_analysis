@@ -1,4 +1,6 @@
 import numpy as np
+import texttable
+import time
 
 class MyException(Exception):
     pass
@@ -12,8 +14,10 @@ class SOR:
         self.count = 0
         self.omega = omega
         self.initial_guess = initial_guess
+        self.time_taken = 0
         
     def solver(self):
+        start = time.time()
         residual_convergence = 1e-8
         
         if(self.initial_guess == 0):
@@ -43,6 +47,24 @@ class SOR:
                 self.sol[i] = (1 - self.omega) * self.sol[i] + (self.omega / self.A[i, i]) * (self.b[i] - total)
             
             curr_residual = np.linalg.norm(np.matmul(self.A, self.sol) - self.b)
+            
+        self.time_taken = time.time() - start
+    
+    def calculate_error_L1(self):
+        b_dash = np.dot(self.A, self.sol)
+        return np.sum(np.abs(b_dash - self.b))
         
     def __str__(self):
-        return "SOR Iterations: " + str(self.count)
+        table = texttable.Texttable()
+        
+        table.set_cols_align(["c", "c"])
+        table.set_cols_valign(["m", "m"])
+        
+        values = [["Method", "Successive Over-Relaxation"],
+                  ["Iterations", self.count],
+                  ["Omega", self.omega],
+                  ["Error - L1 Norm", self.calculate_error_L1()],
+                  ["Time taken", self.time_taken]]
+        
+        table.add_rows(values)
+        return table.draw()

@@ -1,14 +1,20 @@
 import numpy as np
+import texttable
+import time
 
 class Jacobi:
-    def __init__(self, A, b, it = 1000):
+    def __init__(self, A, b, radius = "NA", it = 1000):
         self.A = A
         self.b = b
         self.iterations = it
         self.sol = None
         self.count = 0
+        self.time_taken = 0
+        self.radius = radius
     
     def solver(self):
+        start = time.time()
+        
         self.sol = np.zeros_like(self.b)
         
         for it in range(self.iterations):
@@ -28,8 +34,23 @@ class Jacobi:
     
             self.sol = temp
             
-    def calculate_error(self):
-        return np.dot(self.A, self.sol) - self.b
+        self.time_taken = time.time() - start
+            
+    def calculate_error_L1(self):
+        b_dash = np.dot(self.A, self.sol)
+        return np.sum(np.abs(b_dash - self.b))
         
     def __str__(self):
-        return "Jacobi Iterations: " + str(self.count)
+        table = texttable.Texttable()
+        
+        table.set_cols_align(["c", "c"])
+        table.set_cols_valign(["m", "m"])
+        
+        values = [["Method", "Jacobi"],
+                  ["Iterations", self.count],
+                  ["Spectral Radius", self.radius],
+                  ["Error - L1 Norm", self.calculate_error_L1()],
+                  ["Time taken", self.time_taken]]
+        
+        table.add_rows(values)
+        return table.draw()
