@@ -17,15 +17,21 @@ class GenerateMatrix:
             mat[r, r] = all_sum * (1 / self.upper)
         
         return mat
+      
+    def check_invertibility(self):
+        eigen_values = np.linalg.eigvals(self.A)
+        
+        if(np.any(np.isclose(eigen_values,np.zeros(self.n),atol=1e-10))):
+            return False
+        
+        return True
         
     def generate_matrix(self):
         self.A = self.generate_A()
         self.b = np.random.rand(self.n, 1)
         
-        eigen_values = np.linalg.eigvals(self.A)
-        
-        if(np.any(np.isclose(eigen_values,np.zeros(self.n),atol=1e-10))):
-            print("Generated matrix is not convertible!")
+        if(not self.check_invertibility()):
+            print("Generated matrix is Singular!")
             self.counter += 1
             self.generate_matrix()
     
@@ -94,3 +100,20 @@ class GenerateMatrix:
             print("System generated %s times!" % (self.counter))
         
         return self.A, self.b
+    
+    def foreign_system(self, A, b):
+        self.A = A
+        self.b = b
+        
+        self.n = self.A.shape[0]
+        
+        if(not self.check_invertibility()):
+            print("Exception: Provided matrix is Singular!" )
+            return
+            
+        if(not self.will_converge()):
+            print("Exception: Provided matrix will not converge!")
+            print("It has Spectral radius: ", max(self.jacobi_rad,self.gs_rad))
+            return
+        
+        print("Foreign System Initialized Successfully!")

@@ -18,7 +18,7 @@ class SOR:
         
     def solver(self):
         start = time.time()
-        residual_convergence = 1e-8
+        residual_convergence = 1e-6
         
         if(self.initial_guess == 0):
             self.initial_guess = np.zeros_like(self.b)
@@ -47,6 +47,7 @@ class SOR:
                 self.sol[i] = (1 - self.omega) * self.sol[i] + (self.omega / self.A[i, i]) * (self.b[i] - total)
             
             curr_residual = np.linalg.norm(np.matmul(self.A, self.sol) - self.b)
+            print("Iteration: {} and Residual: {}".format(self.count, curr_residual))
             
         self.time_taken = time.time() - start
     
