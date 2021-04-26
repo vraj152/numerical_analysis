@@ -79,7 +79,7 @@ class GenerateMatrix:
     def will_converge(self):
         self.s_radius = self.calculate_spactral_radius()
         
-        if(self.lower <= self.s_radius <= self.upper) or np.isclose(self.s_radius,self.upper,atol=1e-4) or np.isclose(self.s_radius,self.lower,atol=1e-4):
+        if(self.lower <= self.s_radius <= self.upper) or np.isclose(self.s_radius, self.upper, atol=1e-6) or np.isclose(self.s_radius, self.lower, atol=1e-6):
             return True
         
         return False
@@ -91,6 +91,7 @@ class GenerateMatrix:
         
         while(self.counter < 100):
             if(self.will_converge()):
+                print("System generated successfully!")
                 break
             else:
                 print("Generated matrix has spectral radius {0} which is out of range!".format(self.s_radius))
