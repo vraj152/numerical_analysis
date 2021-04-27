@@ -32,6 +32,15 @@ class GenerateMatrix:
         
         return self.make_diagonal_dominant(mat, 0, self.n-1)
     
+    def tri_dd(self, mat):
+        for r in range(self.n):
+            x = max(0, r-1)
+            
+            mat[r, r+2:] = 0
+            mat[r, :x] = 0
+            
+        return self.make_diagonal_dominant(mat, 0, self.n)
+    
     def generate_A(self):
         mat = np.random.rand(self.n, self.n)
         
@@ -41,6 +50,8 @@ class GenerateMatrix:
             return self.lower_dd(mat)
         elif(self.method == "Upper-DD"):
             return self.upper_dd(mat)
+        elif(self.method == "TriDiagonal-DD"):
+            return self.tri_dd(mat)
         
     def check_invertibility(self):
         eigen_values = np.linalg.eigvals(self.A)

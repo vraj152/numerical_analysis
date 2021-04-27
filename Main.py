@@ -4,8 +4,8 @@ from GaussSeidel import GaussSeidel
 from SOR import SOR
 import numpy as np
 
-system = GenerateMatrix(method = "Random-DD", lower_threshold = 0.5, upper_threshold = 0.7)
-A, b = system.generate_system(1000)
+system = GenerateMatrix(method = "TriDiagonal-DD", lower_threshold = 0.5, upper_threshold = 0.7)
+A, b = system.generate_system(400)
 
 print("Spectral Radius: ", system.s_radius)
 print("Number of times matrix generated: ", system.counter)
