@@ -6,7 +6,7 @@ class MyException(Exception):
     pass
     
 class SOR:
-    def __init__(self, A, b, initial_guess = 0, omega = 0.5, it = 1000, debug = False):
+    def __init__(self, A, b, method, initial_guess = 0, omega = 0.5, it = 1000, debug = False):
         self.A = A
         self.b = b
         self.iterations = it
@@ -16,6 +16,7 @@ class SOR:
         self.initial_guess = initial_guess
         self.time_taken = 0
         self.debug = debug
+        self.method = method
         
     def solver(self):
         start = time.time()
@@ -64,6 +65,8 @@ class SOR:
         table.set_cols_valign(["m", "m"])
         
         values = [["Method", "Successive Over-Relaxation"],
+                  ["Matrix Type", self.method],
+                  ["Matrix Size", self.A.shape],
                   ["Iterations", self.count],
                   ["Omega", self.omega],
                   ["Error - L1 Norm", self.calculate_error_L1()],

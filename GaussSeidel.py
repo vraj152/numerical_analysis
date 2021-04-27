@@ -3,7 +3,7 @@ import texttable
 import time
 
 class GaussSeidel:
-    def __init__(self, A, b, radius = "NA", it = 100):
+    def __init__(self, A, b, method, radius = "NA", it = 100):
         self.A = A
         self.b = b
         self.iteration = it
@@ -11,6 +11,7 @@ class GaussSeidel:
         self.count = 0
         self.time_taken = 0
         self.radius = radius
+        self.method = method
     
     def solver(self):
         start = time.time()
@@ -44,6 +45,8 @@ class GaussSeidel:
         table.set_cols_valign(["m", "m"])
         
         values = [["Method", "Gauss Seidel"],
+                  ["Matrix Type", self.method],
+                  ["Matrix Size", self.A.shape],
                   ["Iterations", self.count],
                   ["Spectral Radius", self.radius],
                   ["Error - L1 Norm", self.calculate_error_L1()],
