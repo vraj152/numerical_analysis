@@ -6,7 +6,7 @@ class MyException(Exception):
     pass
     
 class SOR:
-    def __init__(self, A, b, initial_guess = 0, omega = 0.5, it = 1000):
+    def __init__(self, A, b, initial_guess = 0, omega = 0.5, it = 1000, debug = False):
         self.A = A
         self.b = b
         self.iterations = it
@@ -15,6 +15,7 @@ class SOR:
         self.omega = omega
         self.initial_guess = initial_guess
         self.time_taken = 0
+        self.debug = debug
         
     def solver(self):
         start = time.time()
@@ -47,7 +48,8 @@ class SOR:
                 self.sol[i] = (1 - self.omega) * self.sol[i] + (self.omega / self.A[i, i]) * (self.b[i] - total)
             
             curr_residual = np.linalg.norm(np.matmul(self.A, self.sol) - self.b)
-            print("Iteration: {} and Residual: {}".format(self.count, curr_residual))
+            if(self.debug):
+                print("Iteration: {} and Residual: {}".format(self.count, curr_residual))
             
         self.time_taken = time.time() - start
     

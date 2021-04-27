@@ -6,18 +6,19 @@ from Jacobi import Jacobi
 from GenerateMatrix import GenerateMatrix
 from SOR import SOR
 
-"""
 a = mmread("TestingMatrix/bcsstm20.mtx")
 A = coo_matrix(a, dtype = np.float64).toarray()
 
 n = A.shape[0]
 b = np.random.rand(n, 1)
-"""
 
+"""
 system = GenerateMatrix(upper_threshold = 0.95)
 A, b = system.generate_system(1000)
+"""
 
-#system.foreign_system(A, b)
+system = GenerateMatrix()
+system.foreign_system(A, b)
 
 jacobi_obj = Jacobi(A, b, system.jacobi_rad, it = 3000)
 jacobi_obj.solver()

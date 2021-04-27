@@ -1,23 +1,47 @@
 import numpy as np
 
 class GenerateMatrix:
-    def __init__(self, lower_threshold = 0, upper_threshold = 1):
+    def __init__(self, method = "Random-DD", lower_threshold = 0, upper_threshold = 1):
         self.counter = 0
         self.A = None
         self.b = None
         self.lower = lower_threshold
         self.upper = upper_threshold
         self.s_radius = 0
+        self.method = method
     
-    def generate_A(self):
-        mat = np.random.rand(self.n, self.n)
-        
-        for r in range(self.n):
+    def make_diagonal_dominant(self, mat, l, u):
+        for r in range(l, u):
             all_sum = sum(abs(mat[r, :])) - abs(mat[r, r])
             mat[r, r] = all_sum * (1 / self.upper)
         
         return mat
-      
+    
+    def random_dd(self, mat):
+        return self.make_diagonal_dominant(mat, 0, self.n)
+    
+    def lower_dd(self, mat):
+        for r in range(self.n):
+            mat[r, r+1:] = 0
+        
+        return self.make_diagonal_dominant(mat, 1, self.n)
+    
+    def upper_dd(self, mat):
+        for r in range(self.n):
+            mat[r, :r] = 0
+        
+        return self.make_diagonal_dominant(mat, 0, self.n-1)
+    
+    def generate_A(self):
+        mat = np.random.rand(self.n, self.n)
+        
+        if(self.method == "Random-DD"):
+            return self.random_dd(mat)
+        elif(self.method == "Lower-DD"):
+            return self.lower_dd(mat)
+        elif(self.method == "Upper-DD"):
+            return self.upper_dd(mat)
+        
     def check_invertibility(self):
         eigen_values = np.linalg.eigvals(self.A)
         
@@ -79,7 +103,7 @@ class GenerateMatrix:
     def will_converge(self):
         self.s_radius = self.calculate_spactral_radius()
         
-        if(self.lower <= self.s_radius <= self.upper) or np.isclose(self.s_radius, self.upper, atol=1e-6) or np.isclose(self.s_radius, self.lower, atol=1e-6):
+        if(self.method != "Random-DD" or self.lower <= self.s_radius <= self.upper) or np.isclose(self.s_radius, self.upper, atol=1e-6) or np.isclose(self.s_radius, self.lower, atol=1e-6):
             return True
         
         return False
@@ -95,6 +119,7 @@ class GenerateMatrix:
                 break
             else:
                 print("Generated matrix has spectral radius {0} which is out of range!".format(self.s_radius))
+                self.generate_system(n)
                 self.counter += 1
                 
         if(self.counter != 0):
