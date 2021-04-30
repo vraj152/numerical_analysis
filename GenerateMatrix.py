@@ -1,15 +1,15 @@
 import numpy as np
-import random
 
 class GenerateMatrix:
     def __init__(self, method = "Random-DD", lower_threshold = 0, upper_threshold = 1):
-        self.counter = 0
         self.A = None
         self.b = None
         self.lower = lower_threshold
         self.upper = upper_threshold
         self.s_radius = 0
         self.method = method
+        self.gmc = 0
+        self.spc = 0
     
     def make_diagonal_dominant(self, mat):
         for r in range(self.n):
@@ -49,24 +49,24 @@ class GenerateMatrix:
         
         return self.make_diagonal_dominant(mat)
         
-    def z_matrix(self, mat):
-        def get_zero_minusone():
-            if(random.random() > 0.5):
-                return 0
-            return -1
+    def z_matrix(self, mat, mode = ""):
+        mat = mat * -1
+        mat[range(self.n), range(self.n)] = -mat[range(self.n), range(self.n)]
         
-        for r in range(self.n):
+        if(mode == "q"):
+            return mat
             
-            #Will be called once for upper and once for lower.
-            
-            mat[r, r+1:] *= get_zero_minusone()
-            mat[r, :r] *= get_zero_minusone()
-        
         return self.make_diagonal_dominant(mat)
     
     def q_matrix(self, mat):
-        pass
-    
+        mat = self.z_matrix(mat, "q")
+        mat[range(self.n), range(self.n)] = 0
+        
+        for c in range(self.n):
+            mat[c, c] = -sum(mat[:,c])
+
+        return mat
+        
     def generate_A(self):
         mat = np.random.rand(self.n, self.n)
         
@@ -82,6 +82,8 @@ class GenerateMatrix:
             return self.symmetrix_matrix(mat)
         elif(self.method == "Z-DD"):
             return self.z_matrix(mat)
+        elif(self.method == "Q-DD"):
+            return self.q_matrix(mat)
         
     def check_invertibility(self):
         eigen_values = np.linalg.eigvals(self.A)
@@ -93,11 +95,13 @@ class GenerateMatrix:
     
     def generate_matrix(self):
         self.A = self.generate_A()
+        #print(self.A)
+        
         self.b = np.random.rand(self.n, 1)
         
-        if(not self.check_invertibility()):
+        if(not self.check_invertibility() and self.gmc < 100):
             print("Generated matrix is Singular!")
-            self.counter += 1
+            self.gmc += 1
             self.generate_matrix()
     
     def calculate_spactral_radius(self):
@@ -154,17 +158,17 @@ class GenerateMatrix:
         
         self.generate_matrix()
         
-        while(self.counter < 100):
+        while(self.spc < 100):
             if(self.will_converge()):
                 print("System generated successfully!")
                 break
             else:
                 print("Generated matrix has spectral radius {0} which is out of range!".format(self.s_radius))
                 self.generate_system(n)
-                self.counter += 1
+                self.spc += 1
                 
-        if(self.counter != 0):
-            print("System generated %s times!" % (self.counter))
+        if(self.spc + self.gmc != 0):
+            print("System generated %s times!" % (self.spc + self.gmc))
         
         return self.A, self.b
     
