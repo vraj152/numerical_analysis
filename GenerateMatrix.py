@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 class GenerateMatrix:
     def __init__(self, method = "Random-DD", lower_threshold = 0, upper_threshold = 1):
@@ -10,27 +11,28 @@ class GenerateMatrix:
         self.s_radius = 0
         self.method = method
     
-    def make_diagonal_dominant(self, mat, l, u):
-        for r in range(l, u):
-            all_sum = sum(abs(mat[r, :])) - abs(mat[r, r])
-            mat[r, r] = all_sum * (1 / self.upper)
-        
+    def make_diagonal_dominant(self, mat):
+        for r in range(self.n):
+            if(np.count_nonzero(mat[r]) > 1):
+                all_sum = sum(abs(mat[r, :])) - abs(mat[r, r])
+                mat[r, r] = all_sum * (1 / self.upper)
+                
         return mat
     
     def random_dd(self, mat):
-        return self.make_diagonal_dominant(mat, 0, self.n)
+        return self.make_diagonal_dominant(mat)
     
     def lower_dd(self, mat):
         for r in range(self.n):
             mat[r, r+1:] = 0
         
-        return self.make_diagonal_dominant(mat, 1, self.n)
+        return self.make_diagonal_dominant(mat)
     
     def upper_dd(self, mat):
         for r in range(self.n):
             mat[r, :r] = 0
         
-        return self.make_diagonal_dominant(mat, 0, self.n-1)
+        return self.make_diagonal_dominant(mat)
     
     def tri_dd(self, mat):
         for r in range(self.n):
@@ -39,7 +41,31 @@ class GenerateMatrix:
             mat[r, r+2:] = 0
             mat[r, :x] = 0
             
-        return self.make_diagonal_dominant(mat, 0, self.n)
+        return self.make_diagonal_dominant(mat)
+    
+    def symmetrix_matrix(self, mat):
+        for r in range(self.n):
+            mat[r+1:, r] = mat[r, r+1:]
+        
+        return self.make_diagonal_dominant(mat)
+        
+    def z_matrix(self, mat):
+        def get_zero_minusone():
+            if(random.random() > 0.5):
+                return 0
+            return -1
+        
+        for r in range(self.n):
+            
+            #Will be called once for upper and once for lower.
+            
+            mat[r, r+1:] *= get_zero_minusone()
+            mat[r, :r] *= get_zero_minusone()
+        
+        return self.make_diagonal_dominant(mat)
+    
+    def q_matrix(self, mat):
+        pass
     
     def generate_A(self):
         mat = np.random.rand(self.n, self.n)
@@ -52,6 +78,10 @@ class GenerateMatrix:
             return self.upper_dd(mat)
         elif(self.method == "TriDiagonal-DD"):
             return self.tri_dd(mat)
+        elif(self.method == "Symmetric-DD"):
+            return self.symmetrix_matrix(mat)
+        elif(self.method == "Z-DD"):
+            return self.z_matrix(mat)
         
     def check_invertibility(self):
         eigen_values = np.linalg.eigvals(self.A)
@@ -60,7 +90,7 @@ class GenerateMatrix:
             return False
         
         return True
-        
+    
     def generate_matrix(self):
         self.A = self.generate_A()
         self.b = np.random.rand(self.n, 1)

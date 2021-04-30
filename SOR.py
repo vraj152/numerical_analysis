@@ -6,7 +6,7 @@ class MyException(Exception):
     pass
     
 class SOR:
-    def __init__(self, A, b, method, initial_guess = 0, omega = 0.5, it = 1000, debug = False):
+    def __init__(self, A, b, method, initial_guess = 0, omega = 0.5, it = 1000, debug = False, fault_tolerance = 1e-4):
         self.A = A
         self.b = b
         self.iterations = it
@@ -17,10 +17,11 @@ class SOR:
         self.time_taken = 0
         self.debug = debug
         self.method = method
+        self.fault_tolerance = fault_tolerance
         
     def solver(self):
         start = time.time()
-        residual_convergence = 1e-6
+        residual_convergence = self.fault_tolerance
         
         if(self.initial_guess == 0):
             self.initial_guess = np.zeros_like(self.b)
@@ -69,6 +70,7 @@ class SOR:
                   ["Matrix Size", self.A.shape],
                   ["Iterations", self.count],
                   ["Omega", self.omega],
+                  ["Fault Tolerance", self.fault_tolerance],
                   ["Error - L1 Norm", self.calculate_error_L1()],
                   ["Time taken", self.time_taken]]
         
