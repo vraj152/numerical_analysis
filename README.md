@@ -5,8 +5,8 @@ Final Project - Comparison of Iterative Methods (Linear Systems)
   * To ensure the convergence, all the matrix are converted to diagonal dominant matrix.   
   * Type of matrix can be generated:
     *  Random
-    *  Lower Traingular
-    *  Upper Traingular
+    *  Lower Triangular
+    *  Upper Triangular 
     *  Tridiagonal
     *  Symmetric
     *  Z matrix
