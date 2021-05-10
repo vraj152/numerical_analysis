@@ -1,17 +1,22 @@
 import numpy as np
 
 class GenerateMatrix:
-    def __init__(self, method = "Random-DD", lower_threshold = 0, upper_threshold = 1):
+    def __init__(self, method = "Random-DD", lower_threshold = 0, upper_threshold = 1, diagonal_dom = True):
         self.A = None
         self.b = None
         self.lower = lower_threshold
         self.upper = upper_threshold
+        self.diagonal_dom = diagonal_dom
+        
         self.s_radius = 0
         self.method = method
         self.gmc = 0
         self.spc = 0
     
     def make_diagonal_dominant(self, mat):
+        if(not self.diagonal_dom):
+            return mat
+        
         for r in range(self.n):
             if(np.count_nonzero(mat[r]) > 1):
                 all_sum = sum(abs(mat[r, :])) - abs(mat[r, r])
@@ -70,19 +75,19 @@ class GenerateMatrix:
     def generate_A(self):
         mat = np.random.rand(self.n, self.n)
         
-        if(self.method == "Random-DD"):
+        if(self.method == "Random"):
             return self.random_dd(mat)
-        elif(self.method == "Lower-DD"):
+        elif(self.method == "Lower"):
             return self.lower_dd(mat)
-        elif(self.method == "Upper-DD"):
+        elif(self.method == "Upper"):
             return self.upper_dd(mat)
-        elif(self.method == "TriDiagonal-DD"):
+        elif(self.method == "TriDiagonal"):
             return self.tri_dd(mat)
-        elif(self.method == "Symmetric-DD"):
+        elif(self.method == "Symmetric"):
             return self.symmetrix_matrix(mat)
-        elif(self.method == "Z-DD"):
+        elif(self.method == "Z"):
             return self.z_matrix(mat)
-        elif(self.method == "Q-DD"):
+        elif(self.method == "Q"):
             return self.q_matrix(mat)
         
     def check_invertibility(self):

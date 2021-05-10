@@ -3,15 +3,17 @@ import texttable
 import time
 
 class Jacobi:
-    def __init__(self, A, b, method, radius = "NA", it = 1000):
+    def __init__(self, A, b, method, isDiagonalDominant, radius = "NA", it = 1000):
         self.A = A
         self.b = b
+        self.method = method
+        self.isDiagonalDominant = isDiagonalDominant
+        
         self.iterations = it
         self.sol = None
         self.count = 0
         self.time_taken = 0
         self.radius = radius
-        self.method = method
     
     def solver(self):
         start = time.time()
@@ -48,7 +50,8 @@ class Jacobi:
         table.set_cols_valign(["m", "m"])
         
         values = [["Method", "Jacobi"],
-                  ["Matrix Type", self.method],
+                  ["Matrix Type", self.method + " Matrix"],
+                  ["isDiagonalDominant", str(self.isDiagonalDominant)],
                   ["Matrix Size", self.A.shape],
                   ["Iterations", self.count],
                   ["Spectral Radius", self.radius],

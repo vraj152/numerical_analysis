@@ -6,9 +6,12 @@ class MyException(Exception):
     pass
     
 class SOR:
-    def __init__(self, A, b, method, initial_guess = 0, omega = 0.5, it = 1000, debug = False, fault_tolerance = 1e-4):
+    def __init__(self, A, b, method, isDiagonalDominant, initial_guess = 0, omega = 0.5, it = 1000, debug = False, fault_tolerance = 1e-4):
         self.A = A
         self.b = b
+        self.method = method
+        self.isDiagonalDominant = isDiagonalDominant
+        
         self.iterations = it
         self.sol = None
         self.count = 0
@@ -16,7 +19,6 @@ class SOR:
         self.initial_guess = initial_guess
         self.time_taken = 0
         self.debug = debug
-        self.method = method
         self.fault_tolerance = fault_tolerance
         
     def solver(self):
@@ -66,7 +68,8 @@ class SOR:
         table.set_cols_valign(["m", "m"])
         
         values = [["Method", "Successive Over-Relaxation"],
-                  ["Matrix Type", self.method],
+                  ["Matrix Type", self.method + " Matrix"],
+                  ["isDiagonalDominant", str(self.isDiagonalDominant)],
                   ["Matrix Size", self.A.shape],
                   ["Iterations", self.count],
                   ["Omega", self.omega],
