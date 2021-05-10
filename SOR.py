@@ -6,6 +6,19 @@ class MyException(Exception):
     pass
     
 class SOR:
+# =============================================================================
+#     Constructor:
+#         A (numpy 2D array) = [NxN] Matrix
+#         b (numpy 1D array) = [Nx1] Matrix
+#         method (str) = Type of matrix that has been given to the system
+#         isDiagonalDominant (bool) = Whether provided matrix is diagonal dominant
+#         initial_guess (numpy 1D array) = Initial guess for SoR method.
+#         omega (float) = Relaxation Factor
+#         it (int) = Maximum number of iterations
+#         debug (bool) = Setting to view the logs generated during the convergence
+#         fault_tolerance (float) = Residual allowed.    
+# =============================================================================
+    
     def __init__(self, A, b, method, isDiagonalDominant, initial_guess = 0, omega = 0.5, it = 1000, debug = False, fault_tolerance = 1e-4):
         self.A = A
         self.b = b
@@ -20,7 +33,11 @@ class SOR:
         self.time_taken = 0
         self.debug = debug
         self.fault_tolerance = fault_tolerance
-        
+
+# =============================================================================
+#     This function solves the linear system provided.
+# =============================================================================
+    
     def solver(self):
         start = time.time()
         residual_convergence = self.fault_tolerance
@@ -56,11 +73,21 @@ class SOR:
                 print("Iteration: {} and Residual: {}".format(self.count, curr_residual))
             
         self.time_taken = time.time() - start
-    
+
+# =============================================================================
+#     This function will calculate error -> L1 Norm.
+# =============================================================================
+
     def calculate_error_L1(self):
         b_dash = np.dot(self.A, self.sol)
         return np.sum(np.abs(b_dash - self.b))
-        
+    
+# =============================================================================
+#     Overridden toString() method. 
+#     When object of this class is printed, it will print details of the object 
+#     in tabular form.
+# =============================================================================
+    
     def __str__(self):
         table = texttable.Texttable()
         

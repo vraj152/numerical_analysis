@@ -1,6 +1,16 @@
 import numpy as np
 
 class GenerateMatrix:
+    
+# =============================================================================
+#     Constructor Arguments:
+#         * method (str) = Type of matrix to be generated.
+#         * lower_threshold (float) = lower limit for spectral radius
+#         * upper_threshold (float) = upper limit for spectra radius
+#         (If radius will not not be between this range then system will generate another matrix)
+#         * diagonal_dom (bool) = whether diagonal dominant matrix should be generated. 
+# =============================================================================
+        
     def __init__(self, method = "Random-DD", lower_threshold = 0, upper_threshold = 1, diagonal_dom = True):
         self.A = None
         self.b = None
@@ -13,6 +23,15 @@ class GenerateMatrix:
         self.gmc = 0
         self.spc = 0
     
+# =============================================================================
+#     Accepts:
+#         mat = (NxN) matrix
+#     Returns:
+#         mat = (NxN) matrix
+#         
+#     It will make matrix diagonal dominant if enabled.
+# =============================================================================
+    
     def make_diagonal_dominant(self, mat):
         if(not self.diagonal_dom):
             return mat
@@ -23,6 +42,21 @@ class GenerateMatrix:
                 mat[r, r] = all_sum * (1 / self.upper)
                 
         return mat
+# =============================================================================
+#     
+#     Helper functions for generating A matrix.
+#     All following functions will take mat -> (NxN) matrix as an argument
+#     and will return (NxN) matrix.
+#     
+#     1) random_dd = Will not modify matrix as A is already randomly generated.
+#     2) lower_dd = Will make A lower triangular.
+#     3) upper_dd = Will make A upper triangular.
+#     4) tri_dd = Will make A tridiagonal.
+#     5) symmetrix_matrix = Will make A  symmetric.
+#     6) z_matrix = Will make A Z-Matrix.
+#     7) q_matrix = Will make A Q-Matrix.
+#     
+# =============================================================================
     
     def random_dd(self, mat):
         return self.make_diagonal_dominant(mat)
@@ -71,7 +105,13 @@ class GenerateMatrix:
             mat[c, c] = -sum(mat[:,c])
 
         return mat
-        
+    
+# =============================================================================
+#     This function generates matrix A randomly of dimension [self.n x self.n]
+#     And will invoke method acccordingly based on the argument provided.
+#     
+# =============================================================================
+    
     def generate_A(self):
         mat = np.random.rand(self.n, self.n)
         
@@ -90,6 +130,13 @@ class GenerateMatrix:
         elif(self.method == "Q"):
             return self.q_matrix(mat)
         
+# =============================================================================
+#     This matrix checks whether the matrix is invertible or not.
+#     Returns:
+#         bool = False if singular, True otherwise.
+#         
+# =============================================================================
+    
     def check_invertibility(self):
         eigen_values = np.linalg.eigvals(self.A)
         
@@ -97,6 +144,16 @@ class GenerateMatrix:
             return False
         
         return True
+    
+# =============================================================================
+#     This function generates A and b matrix and uses generate_A() as helper
+#     function. It will check invertibility.
+#     
+#     If singular matrix is generated then it will recursively generates new matrix.
+#     It will stop if invertible matrix is generated or it has generated matrix 100
+#     times. Whichever is earlier.
+#     
+# =============================================================================
     
     def generate_matrix(self):
         self.A = self.generate_A()
@@ -108,6 +165,20 @@ class GenerateMatrix:
             print("Generated matrix is Singular!")
             self.gmc += 1
             self.generate_matrix()
+    
+# =============================================================================
+#     This function calculates the spectral radius of the matrix.
+#     By returning maximum among these two (Jacobi & Gauss Seidel):
+#         we are making sure we have the larger spectral radius so that
+#         we can have more iterations.
+#         
+#         -> we can also set the solver method. Based on which
+#         spectral radius will be calculated.
+#         
+#     Returns:
+#         int - Spectral radius of the matrix A. 
+#         
+# =============================================================================
     
     def calculate_spactral_radius(self):
         n = self.n
@@ -136,19 +207,24 @@ class GenerateMatrix:
         return max(ev_jac, ev_gs)
     
         """
-        By returning maximum among these two:
-            we are making sure we have the larger spectral radius so that
-            we can have more iterations.
-            
-            -> we can also set the solver method. Based on which
-            spectral radius will be calculated.
-        
         if self.method == 'jacobi':
             return ev_jac
         elif self.method == 'gauss_seidel':
             return ev_gs
         
         """
+    
+# =============================================================================
+#     This function will check whether matrix A will converge or not.
+#     Check is performed based on spectral radius.
+#     
+#     If system's spectral radius is between lower bound and upper bound then
+#     system will converge. 
+#     
+#     Returns:
+#         bool -> True is returned if system will converge; False otherwise.
+#     
+# =============================================================================
     
     def will_converge(self):
         self.s_radius = self.calculate_spactral_radius()
@@ -157,6 +233,19 @@ class GenerateMatrix:
             return True
         
         return False
+    
+# =============================================================================
+#     This function will be called.
+#     Accepts:
+#         n = (int) -> Dimension of the matrix to be generated.
+#     Returns:
+#         A, b -> Will return system generated.
+#      
+#     If generated system will not converge then it will recursively generates new matrix.
+#     It will stop if matrix will converge or it has generated matrix 100 times. 
+#     Whichever is earlier.    
+# 
+# =============================================================================
     
     def generate_system(self, n):
         self.n = n
@@ -176,6 +265,19 @@ class GenerateMatrix:
             print("System generated %s times!" % (self.spc + self.gmc))
         
         return self.A, self.b
+    
+# =============================================================================
+#     Accepts:
+#         A, b matrix
+#     Returns:
+#         None
+#     
+#     Function loads foreign systems to the native system. 
+#     While loading the data -> It will check the spectral radius and convergence of the system.
+#     
+#     If both the check passes -> we have successfully loaded the system.
+#     Otherwise -> It will generate exception.
+# =============================================================================
     
     def foreign_system(self, A, b):
         self.A = A
